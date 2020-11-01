@@ -56,7 +56,8 @@ IMGalcool = pygame.image.load("alcool.png")
 y = 0
 
 position = [105, 275, 435]
-obst = [IMGmascara,IMGaglomeracao,IMGaglomeracao2,IMGaglomeracao3,IMGalcool]
+obst = [IMGaglomeracao,IMGaglomeracao2,IMGaglomeracao3]
+itens = [IMGmascara,IMGalcool]
 
 obstaculos=[]
 
@@ -89,12 +90,16 @@ while True:
     y+=3
 
 
-    if y % 123 == 0:
+    if y % 153 == 0:
         position_AUX = random.choice(position)
         while position_AUX == position_AUX_ANT:
             position_AUX = random.choice(position)
         position_AUX_ANT = position_AUX
-        next = random.choice(obst)
+        sortear = random.randint(0,101)
+        if sortear > 3:
+            next = random.choice(obst)
+        else:
+            next = random.choice(itens)
         if next == IMGaglomeracao or next == IMGaglomeracao2 or next ==IMGaglomeracao3:
             obstaculos.append(Obstaculo(position_AUX_ANT, next))
         if next == IMGmascara:
