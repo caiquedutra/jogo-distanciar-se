@@ -5,6 +5,11 @@ import os
 import random
 
 
+class Obstaculo:
+    def __init__(self,x):
+        self.x = x
+        self.y = -50
+        self.out = False
 
 W, H = 640, 480
 HW, HH = W / 2, H/2
@@ -20,12 +25,16 @@ FPS = 120
 
 background = pygame.image.load("bg.png").convert()
 personagem = pygame.image.load("pers.jpg").convert()
-y = 800
+y = 0
 posicaoPersonagem = 300
 position = [150, 300, 450]
-obstaculosGerados = False
 
+obstaculos=[]
+
+gerado = False
 while True:
+
+
 
     for event in pygame.event.get():
 
@@ -45,15 +54,19 @@ while True:
     y+=3
 
 
+    if y % 90 == 0:
+        obstaculos.append(Obstaculo(random.choice(position)))
+    for l in range(obstaculos.__len__()):
+        DS.blit(personagem,(obstaculos[l].x, obstaculos[l].y))
+        obstaculos[l].y+=3
+        if obstaculos[l].y > 480:
+            obstaculos[l].out = True
 
     DS.blit(personagem, (posicaoPersonagem, 360))
 
-    if obstaculosGerados == False:
-        for l in range(0,2100,100):
-            background.blit(personagem, (random.choice(position), l))
-            print(random.choice(position))
-            obstaculosGerados = True
-
+    for l in range(obstaculos.__len__()):
+        if (360 + 10 >= obstaculos[l].y - 5 and 360 - 10 <= obstaculos[l].y + 5) and (posicaoPersonagem + 10 >= obstaculos[l].x - 5 and posicaoPersonagem - 10 <= obstaculos[l].x + 10) and obstaculos[l].out == False:
+            sys.exit(1)
 
     pygame.display.update()
     clock.tick(FPS)
