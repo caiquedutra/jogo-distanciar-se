@@ -32,6 +32,9 @@ position = [150, 300, 450]
 obstaculos=[]
 
 gerado = False
+
+position_AUX = 0
+position_AUX_ANT = 1
 while True:
 
 
@@ -55,7 +58,11 @@ while True:
 
 
     if y % 90 == 0:
-        obstaculos.append(Obstaculo(random.choice(position)))
+        position_AUX = random.choice(position)
+        while position_AUX == position_AUX_ANT:
+            position_AUX = random.choice(position)
+        position_AUX_ANT = position_AUX
+        obstaculos.append(Obstaculo(position_AUX_ANT))
     for l in range(obstaculos.__len__()):
         DS.blit(personagem,(obstaculos[l].x, obstaculos[l].y))
         obstaculos[l].y+=3
