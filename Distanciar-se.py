@@ -3,6 +3,7 @@ from pygame.locals import*
 import sys
 import os
 import random
+from pygame import mixer
 
 class Personagem:
     def __init__(self):
@@ -68,6 +69,10 @@ IMGaglomeracao2 = pygame.image.load("aglomeracao2.png")
 IMGaglomeracao3 = pygame.image.load("aglomeracao3.png")
 IMGmascara = pygame.image.load("mascara.png")
 IMGalcool = pygame.image.load("alcool.png")
+
+vidaSound =  mixer.Sound('vidaPlus.wav')
+invencibilitySound = mixer.Sound('invencibilitySound.wav')
+danoSound = mixer.Sound('dano.wav')
 y = 0
 
 position = [105, 275, 435]
@@ -115,7 +120,7 @@ while True:
             position_AUX = random.choice(position)
         position_AUX_ANT = position_AUX
         sortear = random.randint(0,101)
-        if sortear > 8:
+        if sortear > 5:
             next = random.choice(obst)
         else:
             next = random.choice(itens)
@@ -141,27 +146,33 @@ while True:
                 obstaculos[l].contato = True
                 personagem.invencibilidade = True
                 tempoInvencibilidade = 500
+                invencibilitySound.stop()
+                invencibilitySound.play(0)
             elif isinstance(obstaculos[l],Alcool) and obstaculos[l].contato == False:
                 print("alcool")
                 obstaculos[l].contato = True
                 personagem.vidas+=1
+                vidaSound.play(0)
             elif personagem.invencibilidade == False and personagem.vidas == 0 and obstaculos[l].contato == False:
                 sys.exit(1)
             elif personagem.invencibilidade == False and personagem.vidas >= 1 and obstaculos[l].contato == False:
                 obstaculos[l].contato = True
+                danoSound.play(0)
                 personagem.vidas-=1
 
-    draw_text(DS, str(personagem.vidas), 25, 10, 10)
+
+    textoVidas = 'Vidas: {0}'.format(personagem.vidas)
+    draw_text(DS, str(textoVidas), 25, 42, 10)
     if tempoInvencibilidade > 100:
-        text = "Tempo de Invencibilidade restante: 1"
+        textoInvencibilidade = "Tempo de Invencibilidade restante: 1"
     if tempoInvencibilidade > 200:
-        text = "Tempo de Invencibilidade restante: 2"
+        textoInvencibilidade = "Tempo de Invencibilidade restante: 2"
     if tempoInvencibilidade > 300:
-        text = "Tempo de Invencibilidade restante: 3"
+        textoInvencibilidade = "Tempo de Invencibilidade restante: 3"
     if tempoInvencibilidade > 400:
-        text = "Tempo de Invencibilidade restante: 4"
+        textoInvencibilidade = "Tempo de Invencibilidade restante: 4"
     if personagem.invencibilidade == True:
-        draw_text(DS, str(text), 25, 168, 40)
+        draw_text(DS, str(textoInvencibilidade), 25, 168, 40)
 
     pygame.display.update()
     clock.tick(FPS)
