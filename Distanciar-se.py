@@ -71,11 +71,13 @@ def main_menu():
     while True:
 
         DS.fill((0, 0, 0))
-        draw_text(DS, str("main menu"), 20, 20, 20)
+        draw_text(DS, str("Distanciar-se"), 70, 320, 80)
         mx, my = pygame.mouse.get_pos()
 
-        button_1 = pygame.Rect(50, 100, 200, 50)
-        button_2 = pygame.Rect(50, 200, 200, 50)
+        button_1 = pygame.Rect(110, 250, 190, 50)
+
+        button_2 = pygame.Rect(350, 250, 190, 50)
+
         if button_1.collidepoint((mx, my)):
             if click:
                 fase(4) #fase 1
@@ -84,6 +86,8 @@ def main_menu():
                 options()
         pygame.draw.rect(DS, (255, 0, 0), button_1)
         pygame.draw.rect(DS, (255, 0, 0), button_2)
+        draw_text(DS, str("Jogar"), 20, 202, 262)
+        draw_text(DS, str("Manual"), 20, 442, 262)
 
         click = False
         for event in pygame.event.get():
