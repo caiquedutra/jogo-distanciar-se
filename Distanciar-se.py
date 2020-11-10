@@ -19,6 +19,18 @@ DS = pygame.display.set_mode((W, H))
 pygame.display.set_caption("Distanciar-se")
 FPS = 120
 
+background = pygame.image.load("bg.png").convert()
+IMGpersonagem = pygame.image.load("pers.jpg").convert()
+IMGaglomeracao = pygame.image.load("aglomeracao.png")
+IMGaglomeracao2 = pygame.image.load("aglomeracao2.png")
+IMGaglomeracao3 = pygame.image.load("aglomeracao3.png")
+IMGmascara = pygame.image.load("mascara.png")
+IMGalcool = pygame.image.load("alcool.png")
+
+vidaSound =  mixer.Sound('vidaPlus.wav')
+invencibilitySound = mixer.Sound('invencibilitySound.wav')
+danoSound = mixer.Sound('dano.wav')
+
 class Personagem:
     def __init__(self):
         self.img = IMGpersonagem
@@ -106,21 +118,25 @@ def main_menu():
 
 
 def fase(velocidadeJogo):
-    position = [105, 135, 165, 195, 225, 255, 285, 215, 245, 275, 305, 335, 365, 390, 425]
+
     obst = [IMGaglomeracao, IMGaglomeracao2, IMGaglomeracao3]
     itens = [IMGmascara, IMGalcool]
+    position_AUX_ANT = random.randint(105,425)
 
     obstaculos = []
 
-    gerado = False
 
-    position_AUX = 0
-    position_AUX_ANT = 1
-
-    personagem = Personagem()
     tempoInvencibilidade = 0
     y = 0
     end = False
+
+    personagem.y = 385
+    velocidadeNivel = 0
+    if velocidadeJogo == 4:
+        velocidadeNivel = 208
+    elif velocidadeJogo == 6:
+        velocidadeNivel = 258
+
 
     while y < 14000:
         for event in pygame.event.get():
@@ -149,36 +165,41 @@ def fase(velocidadeJogo):
         if y < 300:
             DS.blit(IMGpersonagem, (personagem.x, personagem.y))
         elif y < 10000:
+
             for l in range(random.randint(1, 2)):
-                if y % 200 == 0:
-                    position_AUX = random.choice(position)
+                if y % (velocidadeNivel)== 0:
+                    position_AUX = random.randint(105, 425)
                     dif = math.fabs(position_AUX - position_AUX_ANT)
-                    while dif < 70:
-                        position_AUX = random.choice(position)
+                    while dif < 150:
+                        position_AUX = random.randint(105, 425)
                         dif = math.fabs(position_AUX - position_AUX_ANT)
                     position_AUX_ANT = position_AUX
+
                     sortear = random.randint(0, 101)
                     if sortear > 3:
                         next = random.choice(obst)
                     else:
                         next = random.choice(itens)
                     if next == IMGaglomeracao or next == IMGaglomeracao2 or next == IMGaglomeracao3:
-                        obstaculos.append(Aglomeracao(position_AUX_ANT, next))
+                        obstaculos.append(Aglomeracao(position_AUX, next))
                     if next == IMGmascara:
-                        obstaculos.append(Mascara(position_AUX_ANT, next))
+                        obstaculos.append(Mascara(position_AUX, next))
                     if next == IMGalcool:
-                        obstaculos.append(Alcool(position_AUX_ANT, next))
-        elif y > 10000 and y < 10600:
+                        obstaculos.append(Alcool(position_AUX, next))
+        elif y > 10000 and y < 10800:
             DS.blit(IMGpersonagem, (personagem.x, personagem.y))
-        elif y > 10600 and y < 11200:
+        elif y > 10800 and y < 11200:
             end = True
             DS.blit(IMGpersonagem, (personagem.x, personagem.y))
         else:
-            if personagem.y > -20:
+            if personagem.y > -40:
                 personagem.y -= 2
                 DS.blit(IMGpersonagem, (personagem.x, personagem.y))
             else:
-                transicaoTela(2)
+                if y < 13000:
+                    transicaoTela(2)
+                else:
+                    fase(6)
 
 
         if end == False:
@@ -229,19 +250,7 @@ def fase(velocidadeJogo):
 
 
 
-background = pygame.image.load("bg.png").convert()
-IMGpersonagem = pygame.image.load("pers.jpg").convert()
-IMGaglomeracao = pygame.image.load("aglomeracao.png")
-IMGaglomeracao2 = pygame.image.load("aglomeracao2.png")
-IMGaglomeracao3 = pygame.image.load("aglomeracao3.png")
-IMGmascara = pygame.image.load("mascara.png")
-IMGalcool = pygame.image.load("alcool.png")
-
-vidaSound =  mixer.Sound('vidaPlus.wav')
-invencibilitySound = mixer.Sound('invencibilitySound.wav')
-danoSound = mixer.Sound('dano.wav')
-
-
+personagem = Personagem()
 while True:
 
     main_menu()
