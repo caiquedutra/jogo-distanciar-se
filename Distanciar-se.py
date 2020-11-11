@@ -30,6 +30,8 @@ IMGalcool = pygame.image.load("alcool.png")
 vidaSound =  mixer.Sound('vidaPlus.wav')
 invencibilitySound = mixer.Sound('invencibilitySound.wav')
 danoSound = mixer.Sound('dano.wav')
+numFase = 1
+
 
 class Personagem:
     def __init__(self):
@@ -73,34 +75,14 @@ def draw_text(surf, text, size, x, y):
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
 
-def transicaoTela(fase):
+def transicaoTela(texto, x, y):
     DS.fill((0, 0, 0))
-    textFase = "Fase {0}".format(fase)
-    draw_text(DS, str(textFase), 50, 200, 240)
+    draw_text(DS, str(texto), 50, x, y)
+
 
 
 def main_menu():
     while True:
-
-        DS.fill((0, 0, 0))
-        draw_text(DS, str("Distanciar-se"), 70, 320, 80)
-        mx, my = pygame.mouse.get_pos()
-
-        button_1 = pygame.Rect(110, 250, 190, 50)
-
-        button_2 = pygame.Rect(350, 250, 190, 50)
-
-        if button_1.collidepoint((mx, my)):
-            if click:
-                fase(4) #fase 1
-        if button_2.collidepoint((mx, my)):
-            if click:
-                options()
-        pygame.draw.rect(DS, (255, 0, 0), button_1)
-        pygame.draw.rect(DS, (255, 0, 0), button_2)
-        draw_text(DS, str("Jogar"), 20, 202, 262)
-        draw_text(DS, str("Manual"), 20, 442, 262)
-
         click = False
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -114,21 +96,45 @@ def main_menu():
                 if event.button == 1:
                     click = True
 
+        DS.fill((0, 0, 0))
+        draw_text(DS, str("Distanciar-se"), 70, 320, 80)
+        mx, my = pygame.mouse.get_pos()
+
+        button_1 = pygame.Rect(110, 250, 190, 50)
+
+        button_2 = pygame.Rect(350, 250, 190, 50)
+
+        if button_1.collidepoint((mx, my)):
+            if click:
+                personagem.vidas = 3
+                fase(4, 0, "Fase: 1") #fase 1
+        if button_2.collidepoint((mx, my)):
+            if click:
+                options()
+        pygame.draw.rect(DS, (255, 0, 0), button_1)
+        pygame.draw.rect(DS, (255, 0, 0), button_2)
+        draw_text(DS, str("Jogar"), 20, 202, 262)
+        draw_text(DS, str("Manual"), 20, 442, 262)
+
+
+
         pygame.display.update()
 
 
-def fase(velocidadeJogo):
+def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
 
+    global numFase
+    tempoTexto = 0
     obst = [IMGaglomeracao, IMGaglomeracao2, IMGaglomeracao3]
     itens = [IMGmascara, IMGalcool]
     position_AUX_ANT = random.randint(105,425)
-
     obstaculos = []
 
 
     tempoInvencibilidade = 0
     y = 0
     end = False
+    tempoJogo = 0
 
     personagem.y = 385
     velocidadeNivel = 0
@@ -137,8 +143,13 @@ def fase(velocidadeJogo):
     elif velocidadeJogo == 6:
         velocidadeNivel = 258
 
+    while tempoTexto < 500:
+        transicaoTela(textoFase, 310, 200)
+        tempoTexto+=4
+        pygame.display.update()
+        clock.tick(FPS)
 
-    while y < 14000:
+    while tempoJogo < 14000:
         for event in pygame.event.get():
 
             if event.type == QUIT:
@@ -155,6 +166,7 @@ def fase(velocidadeJogo):
         if rel_y < H:
             DS.blit(background, (0, rel_y))
         y += velocidadeJogo
+        tempoJogo+=4
 
         if tempoInvencibilidade != 0:
             tempoInvencibilidade -= 1
@@ -162,15 +174,20 @@ def fase(velocidadeJogo):
             personagem.invencibilidade = False
 
 
-        if y < 300:
+        if tempoJogo < 300:
             DS.blit(IMGpersonagem, (personagem.x, personagem.y))
-        elif y < 10000:
+        elif tempoJogo < 10000:
 
-            for l in range(random.randint(1, 2)):
+            if qtdObstaculoAleatoria == 0:
+                qtdObstaculo = random.randint(1, 2)
+            else:
+                qtdObstaculo = 2
+
+            for l in range(qtdObstaculo):
                 if y % (velocidadeNivel)== 0:
                     position_AUX = random.randint(105, 425)
                     dif = math.fabs(position_AUX - position_AUX_ANT)
-                    while dif < 150:
+                    while dif < 130:
                         position_AUX = random.randint(105, 425)
                         dif = math.fabs(position_AUX - position_AUX_ANT)
                     position_AUX_ANT = position_AUX
@@ -186,9 +203,9 @@ def fase(velocidadeJogo):
                         obstaculos.append(Mascara(position_AUX, next))
                     if next == IMGalcool:
                         obstaculos.append(Alcool(position_AUX, next))
-        elif y > 10000 and y < 10800:
+        elif tempoJogo > 10000 and tempoJogo < 11000:
             DS.blit(IMGpersonagem, (personagem.x, personagem.y))
-        elif y > 10800 and y < 11200:
+        elif tempoJogo > 11000 and tempoJogo < 11400:
             end = True
             DS.blit(IMGpersonagem, (personagem.x, personagem.y))
         else:
@@ -196,10 +213,20 @@ def fase(velocidadeJogo):
                 personagem.y -= 2
                 DS.blit(IMGpersonagem, (personagem.x, personagem.y))
             else:
-                if y < 13000:
-                    transicaoTela(2)
+                if numFase == 1:
+                    numFase+=1
+                    fase(6, 0, "Fase: 2")
+                elif numFase == 2:
+                    numFase+=1
+                    fase(6, 1, "Fase: 3")
                 else:
-                    fase(6)
+                    tempoTexto = 0
+                    while tempoTexto < 500:
+                        transicaoTela("GG", 310, 200)
+                        tempoTexto += 4
+                        pygame.display.update()
+                        clock.tick(FPS)
+                    main_menu()
 
 
         if end == False:
@@ -225,7 +252,13 @@ def fase(velocidadeJogo):
                         personagem.vidas += 1
                         vidaSound.play(0)
                     elif personagem.invencibilidade == False and personagem.vidas == 0 and obstaculos[l].contato == False:
-                        sys.exit(1)
+                        tempoTexto = 0
+                        while tempoTexto < 500:
+                            transicaoTela("Game Over!", 310, 200)
+                            tempoTexto += 4
+                            pygame.display.update()
+                            clock.tick(FPS)
+                        main_menu()
                     elif personagem.invencibilidade == False and personagem.vidas >= 1 and obstaculos[l].contato == False:
                         obstaculos[l].contato = True
                         danoSound.play(0)
@@ -246,9 +279,6 @@ def fase(velocidadeJogo):
 
         pygame.display.update()
         clock.tick(FPS)
-
-
-
 
 personagem = Personagem()
 while True:
