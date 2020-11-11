@@ -107,7 +107,7 @@ def main_menu():
         if button_1.collidepoint((mx, my)):
             if click:
                 personagem.vidas = 3
-                fase(4, 0, "Fase: 1") #fase 1
+                fase(4, 0, "Fase 1") #fase 1
         if button_2.collidepoint((mx, my)):
             if click:
                 options()
@@ -123,7 +123,7 @@ def main_menu():
 
 def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
 
-    global numFase
+    global numFase, textoInvencibilidade
     tempoTexto = 0
     obst = [IMGaglomeracao, IMGaglomeracao2, IMGaglomeracao3]
     itens = [IMGmascara, IMGalcool]
@@ -193,7 +193,7 @@ def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
                     position_AUX_ANT = position_AUX
 
                     sortear = random.randint(0, 101)
-                    if sortear > 3:
+                    if sortear > 2:
                         next = random.choice(obst)
                     else:
                         next = random.choice(itens)
@@ -210,15 +210,18 @@ def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
             DS.blit(IMGpersonagem, (personagem.x, personagem.y))
         else:
             if personagem.y > -40:
-                personagem.y -= 2
+                if velocidadeJogo == 4:
+                    personagem.y -= 2
+                else:
+                    personagem.y -= 3
                 DS.blit(IMGpersonagem, (personagem.x, personagem.y))
             else:
                 if numFase == 1:
                     numFase+=1
-                    fase(6, 0, "Fase: 2")
+                    fase(6, 0, "Fase 2")
                 elif numFase == 2:
                     numFase+=1
-                    fase(6, 1, "Fase: 3")
+                    fase(6, 1, "Fase 3")
                 else:
                     tempoTexto = 0
                     while tempoTexto < 500:
