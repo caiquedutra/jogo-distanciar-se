@@ -20,7 +20,14 @@ pygame.display.set_caption("Distanciar-se")
 FPS = 120
 
 background = pygame.image.load("bg.png").convert()
-IMGpersonagem = pygame.image.load("pers.jpg").convert()
+IMGMenu = pygame.image.load("Menu.png").convert()
+fase1 = pygame.image.load("fase1.png").convert()
+fase2 = pygame.image.load("fase2.png").convert()
+fasefinal = pygame.image.load("fasefinal.png").convert()
+gameover = pygame.image.load("gameover.png").convert()
+vcganhou = pygame.image.load("vcganhou.png").convert()
+IMGmanual = pygame.image.load("manual.png")
+IMGpersonagem = pygame.image.load("pers.png")
 IMGaglomeracao = pygame.image.load("aglomeracao.png")
 IMGaglomeracao2 = pygame.image.load("aglomeracao2.png")
 IMGaglomeracao3 = pygame.image.load("aglomeracao3.png")
@@ -75,13 +82,46 @@ def draw_text(surf, text, size, x, y):
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
 
-def transicaoTela(texto, x, y):
-    DS.fill((0, 0, 0))
-    draw_text(DS, str(texto), 50, x, y)
+def transicaoTela(texto):
+    if texto == "Fase 1":
+        DS.blit(fase1,(0, 0))
+    elif texto == "Fase 2":
+        DS.blit(fase2,(0, 0))
+    elif texto == "Fase Final":
+        DS.blit(fasefinal,(0, 0))
+    elif texto == "Game Over!":
+        DS.blit(gameover,(0, 0))
+    else:
+        DS.blit(vcganhou, (0, 0))
+
+def manual():
+    DS.blit(IMGmanual, (0,0))
+    button_3 = pygame.Rect(530, 250, 170, 60)
+    pygame.draw.rect(DS, (255, 0, 0), button_3)
+    click = False
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        if event.type == KEYDOWN:
+            if event.key == K_ESCAPE:
+                pygame.quit()
+                sys.exit()
+        if event.type == MOUSEBUTTONDOWN:
+            if event.button == 1:
+                click = True
+
+        mx, my = pygame.mouse.get_pos()
+        if button_3.collidepoint((mx, my)):
+            if click:
+                main_menu()
+
+    pygame.display.update()
 
 
 
 def main_menu():
+
     while True:
         click = False
         for event in pygame.event.get():
@@ -96,13 +136,12 @@ def main_menu():
                 if event.button == 1:
                     click = True
 
-        DS.fill((0, 0, 0))
-        draw_text(DS, str("Distanciar-se"), 70, 320, 80)
+        DS.blit(IMGMenu, (0,0))
         mx, my = pygame.mouse.get_pos()
 
-        button_1 = pygame.Rect(110, 250, 190, 50)
+        button_1 = pygame.Rect(125, 250, 170, 60)
 
-        button_2 = pygame.Rect(350, 250, 190, 50)
+        button_2 = pygame.Rect(330, 250, 170, 60)
 
         if button_1.collidepoint((mx, my)):
             if click:
@@ -110,13 +149,8 @@ def main_menu():
                 fase(4, 0, "Fase 1") #fase 1
         if button_2.collidepoint((mx, my)):
             if click:
-                options()
-        pygame.draw.rect(DS, (255, 0, 0), button_1)
-        pygame.draw.rect(DS, (255, 0, 0), button_2)
-        draw_text(DS, str("Jogar"), 20, 202, 262)
-        draw_text(DS, str("Manual"), 20, 442, 262)
-
-
+                DS.blit(IMGmascara, (0,0))
+                clock.tick(FPS)
 
         pygame.display.update()
 
@@ -144,7 +178,7 @@ def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
         velocidadeNivel = 258
 
     while tempoTexto < 500:
-        transicaoTela(textoFase, 310, 200)
+        transicaoTela(textoFase)
         tempoTexto+=4
         pygame.display.update()
         clock.tick(FPS)
@@ -193,7 +227,7 @@ def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
                     position_AUX_ANT = position_AUX
 
                     sortear = random.randint(0, 101)
-                    if sortear > 2:
+                    if sortear > 3:
                         next = random.choice(obst)
                     else:
                         next = random.choice(itens)
@@ -221,11 +255,11 @@ def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
                     fase(6, 0, "Fase 2")
                 elif numFase == 2:
                     numFase+=1
-                    fase(6, 1, "Fase 3")
+                    fase(6, 1, "Fase Final")
                 else:
                     tempoTexto = 0
                     while tempoTexto < 500:
-                        transicaoTela("GG", 310, 200)
+                        transicaoTela(vcganhou)
                         tempoTexto += 4
                         pygame.display.update()
                         clock.tick(FPS)
@@ -243,7 +277,7 @@ def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
 
             for l in range(obstaculos.__len__()):
                 if (385 + 10 >= obstaculos[l].y and 385 - 10 <= obstaculos[l].y + 70) and (
-                        personagem.x + 10 >= obstaculos[l].x and personagem.x - 10 <= obstaculos[l].x + 70) and obstaculos[l].out == False:
+                        personagem.x + 10 >= obstaculos[l].x - 10 and personagem.x - 10 <= obstaculos[l].x + 70) and obstaculos[l].out == False:
                     if isinstance(obstaculos[l], Mascara) and obstaculos[l].contato == False:
                         obstaculos[l].contato = True
                         personagem.invencibilidade = True
@@ -257,10 +291,11 @@ def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
                     elif personagem.invencibilidade == False and personagem.vidas == 0 and obstaculos[l].contato == False:
                         tempoTexto = 0
                         while tempoTexto < 500:
-                            transicaoTela("Game Over!", 310, 200)
+                            transicaoTela("Game Over!")
                             tempoTexto += 4
                             pygame.display.update()
                             clock.tick(FPS)
+                        numFase = 1
                         main_menu()
                     elif personagem.invencibilidade == False and personagem.vidas >= 1 and obstaculos[l].contato == False:
                         obstaculos[l].contato = True
