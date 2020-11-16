@@ -96,8 +96,7 @@ def transicaoTela(texto):
 
 def manual():
     DS.blit(IMGmanual, (0,0))
-    button_3 = pygame.Rect(530, 250, 170, 60)
-    pygame.draw.rect(DS, (255, 0, 0), button_3)
+    button_3 = pygame.Rect(531, 421, 91, 43)
     click = False
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -149,8 +148,11 @@ def main_menu():
                 fase(4, 0, "Fase 1") #fase 1
         if button_2.collidepoint((mx, my)):
             if click:
-                DS.blit(IMGmascara, (0,0))
-                clock.tick(FPS)
+                while True:
+                    manual()
+                    pygame.display.update()
+                    clock.tick(FPS)
+
 
         pygame.display.update()
 
@@ -303,7 +305,7 @@ def fase(velocidadeJogo,qtdObstaculoAleatoria,textoFase):
                         personagem.vidas -= 1
 
             textoVidas = 'Vidas: {0}'.format(personagem.vidas)
-            draw_text(DS, str(textoVidas), 25, 42, 10)
+            draw_text(DS, str(textoVidas), 35, 57, 12)
             if tempoInvencibilidade > 100:
                 textoInvencibilidade = "Tempo de Invencibilidade restante: 1"
             if tempoInvencibilidade > 200:
@@ -322,8 +324,3 @@ personagem = Personagem()
 while True:
 
     main_menu()
-
-
-
-
-
